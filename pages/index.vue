@@ -1,0 +1,72 @@
+<template>
+  <div class="home">
+    <SiteHeader></SiteHeader>
+    <main class="container">
+      <div class="grid row">
+        <Story
+          v-for="(post, index) in posts"
+          :data="post"
+          :wide="isWide(index)"
+          :key="index"
+        ></Story>
+      </div>
+    </main>
+    <SiteFooter></SiteFooter>
+  </div>
+</template>
+
+<script>
+import SiteHeader from '~/components/SiteHeader.vue'
+import Story from '~/components/Story.vue'
+import SiteFooter from '~/components/SiteFooter.vue'
+import axios from 'axios'
+
+export default {
+  components: {
+    Story,
+    SiteHeader,
+    SiteFooter
+  },
+  methods: {
+    isWide: function (index) {
+      if (index === 0 || index === 6) {
+        return true
+      } else {
+        return false
+      }
+    }
+  },
+  async asyncData (context) {
+    let { data } = await axios.get(context.store.state.ajaxurl + '/wp/v2/posts?per_page=5&sticky=true')
+    let portfolio = {
+      brandcolour: '#4a5864',
+      featuredimage: {
+        loopset: false,
+        src: 'https://staging.globalbrands.co.uk/cms/wp-content/uploads/2017/08/Global-Brands-Portfolio-group-shot-HR-370x370.jpg'
+      },
+      subheadline: 'Our comprehensive range of premium and high energy brands',
+      title: {
+        rendered: 'Brand Portfolio'
+      },
+      permalink: '/brands',
+      isStatic: true
+    }
+    let messages = {
+      brandcolour: '#8a6f8d',
+      featuredimage: {
+        loopset: false,
+        src: 'https://staging.globalbrands.co.uk/cms/wp-content/uploads/2017/09/Heart-of-global-brands-article-pic-370x370.jpg'
+      },
+      title: {
+        rendered: 'At the heart of Global Brands'
+      },
+      permalink: '/at-the-heart-of-global-brands',
+      isStatic: true
+    }
+    data.splice(2, 0, portfolio)
+    data.splice(4, 0, messages)
+
+    return { posts: data }
+  }
+}
+</script>
