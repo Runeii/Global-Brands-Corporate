@@ -1,28 +1,23 @@
 <template>
-  <div>
-    <SiteHeader></SiteHeader>
-    <main class="container single-post at-the-heart">
-      <article>
-        <i class="close custom-icon-cross h1" v-on:click="close"></i>
-        <div class="post col-12 col-md-10 col-lg-8">
-          <div class="content" v-html="page.content.rendered"></div>
-        </div>
-      </article>
-    </main>
-    <SiteFooter></SiteFooter>
-  </div>
+  <main class="container single-post at-the-heart">
+    <article>
+      <i class="close custom-icon-cross h1" v-on:click="close"></i>
+      <div class="post col-12 col-md-10 col-lg-8">
+        <div class="content" v-html="page.content.rendered"></div>
+      </div>
+    </article>
+  </main>
 </template>
 
 <script>
 // This is the catch all template for any WordPress pages that don't have a specific VUE template assigned
 import axios from 'axios'
-import SiteHeader from '~/components/SiteHeader.vue'
-import SiteFooter from '~/components/SiteFooter.vue'
 
 export default {
-  components: {
-    SiteHeader,
-    SiteFooter
+  head () {
+    return {
+      title: this.title
+    }
   },
   methods: {
     close: function () {
@@ -34,7 +29,8 @@ export default {
       .then((res) => {
         if (res.data.length > 0) {
           return {
-            page: res.data[0]
+            page: res.data[0],
+            title: res.data[0].formatted_title
           }
         } else {
           context.error({ statusCode: '404', message: 'Page not found' })

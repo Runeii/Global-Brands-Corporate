@@ -1,6 +1,5 @@
 <template>
   <div class="news">
-    <SiteHeader></SiteHeader>
     <main class="container">
       <ul class="nav filter">
         <li v-on:click="filter = false" :class="{active: filter === false}">All</a></li>
@@ -8,7 +7,7 @@
       </ul>
       <div class="grid row">
         <Story
-          v-for="(post, index) in posts"
+          v-for="(post, index) in filteredPosts"
           :data="post"
           :wide="isWide(index)"
           :key="index"
@@ -16,23 +15,26 @@
         ></Story>
       </div>
     </main>
-    <SiteFooter></SiteFooter>
   </div>
 </template>
 
 <script>
-import SiteHeader from '~/components/SiteHeader.vue'
-import SiteFooter from '~/components/SiteFooter.vue'
 import Story from '~/components/Story.vue'
 import axios from 'axios'
 
 var throttle = require('lodash.throttle')
 
 export default {
+  head () {
+    return {
+      title: 'News',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Latest news, stories and updates from Global Brands and its brands.' }
+      ]
+    }
+  },
   components: {
-    Story,
-    SiteFooter,
-    SiteHeader
+    Story
   },
   data () {
     return {
@@ -46,6 +48,16 @@ export default {
       return {
         screenHeight: window.innerHeight,
         documentHeight: document.body.clientHeight
+      }
+    },
+    filteredPosts () {
+      if (this.filter !== false) {
+        let filter = this.filter
+        return this.posts.filter(function (post) {
+          return post.categories_extended[0].term_id === filter
+        })
+      } else {
+        return this.posts
       }
     },
     types () {
@@ -80,16 +92,15 @@ export default {
       if (this.loading === false && this.page !== false && getScrollY() >= ((document.body.clientHeight - window.innerHeight) - 200)) {
         this.loading = true
         axios.get(this.$store.state.ajaxurl + '/wp/v2/posts?page=' + this.page)
-          .catch(error => {
-            if (error.response.status === 400) {
+          .then(response => {
+            if (response.data.status === 400) {
               this.page = false
               this.loading = false
+            } else {
+              this.posts = this.posts.concat(response.data)
+              this.page++
+              this.loading = false
             }
-          })
-          .then(response => {
-            this.posts = this.posts.concat(response.data)
-            this.page++
-            this.loading = false
           })
       }
     }

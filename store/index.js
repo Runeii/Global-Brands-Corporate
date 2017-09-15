@@ -4,11 +4,13 @@ import axios from 'axios'
 const store = () => {
   return new Vuex.Store({
     state: {
-      ajaxurl: 'https://staging.globalbrands.co.uk/cms/wp-json',
+      ajaxurl: 'https://www.globalbrands.co.uk/cms/wp-json',
       menu: false,
-      loading: false,
+      target: false,
       brandcolour: false,
-      submenuClass: ''
+      submenuClass: '',
+      pagename: '',
+      mobileMenuStatus: false
     },
     mutations: {
       savemenu (state, links) {
@@ -17,11 +19,17 @@ const store = () => {
       updatesubmenuclass (state, newClass) {
         state.submenuClass = newClass
       },
-      updateloadingState (state, status) {
-        state.loading = status
+      deleteScrollTarget (state) {
+        state.target = false
+      },
+      updatepagename (state, name) {
+        state.pagename = name
       },
       updatebrandcolour (state, colour) {
         state.brandcolour = colour
+      },
+      setMobileMenuStatus (state, status) {
+        state.mobileMenuStatus = status
       }
     },
     actions: {

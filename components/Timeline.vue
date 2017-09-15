@@ -9,10 +9,10 @@
         <li v-for="milestone in milestones" :style="{width: slideWidth + '%'}">
           <div class="overlay"></div>
           <img :src="background(milestone).src" :srcset="background(milestone).srcset" class="background" />
-          <div class="col-12 col-md-7 image">
+          <div class="col-5 col-md-7 image">
             <img :src="milestone.featuredimage.src" :srcset="milestone.featuredimage.srcset" />
           </div>
-          <div class=" col-12 col-md-5 title">
+          <div class="col-7 col-md-5 title">
             <h3 class="h1">{{date(milestone.post_date)}}</h3>
             <p class="h4">{{milestone.post_title}}</p>
           </div>
@@ -30,7 +30,7 @@ import {format, parse} from 'date-fns'
 export default {
   data () {
     return {
-      offset: 3
+      offset: 0
     }
   },
   computed: {

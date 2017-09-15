@@ -1,6 +1,5 @@
 <template>
   <div>
-    <SiteHeader></SiteHeader>
     <main class="container single-brands">
       <article>
         <div class="row">
@@ -10,7 +9,7 @@
             <span v-html="data.brandinfo"></span>
           </div>
           <div class="image col-10 offset-1 offset-sm-0 col-sm-6 col-lg-4">
-            <img v-bind:src="data.featuredimage.product.src" v-bind:srcset="data.featuredimage.product.srcset" />
+            <img v-for="(hero, index) in data.featuredimage.hero" :src="hero.src" :srcset="hero.srcset" v-if="index === slide" />
           </div>
           <div class="side col-10 offset-1 offset-sm-0 col-sm-6 col-lg-4">
             <h3>Product Information</h3>
@@ -20,7 +19,7 @@
                 <i class="icon-download"></i> <a v-bind:href="data.datasheet.url" title="Download product sheet">Download ({{data.datasheet.extension}})</a>
               </span>
               <span v-if="data.website">
-                <h4>Consumer site:</h4>
+                <h4>Full brand site:</h4>
                 <a :href="'http://' + data.website" id="consumerurl" title="">{{data.website}}</a>
               </span>
               <div class="social">
@@ -34,35 +33,41 @@
                   <i class="icon-twitter h2"></i>
                 </a>
               </div>
+              <div class="footnote" v-if="this.footnote" v-html="this.footnote"></div>
           </div>
         </div>
       </article>
-      <div class="row posts" v-if="posts">
-        <nuxt-link v-for="post in posts" :to="'/brands/' + $nuxt.$route.params.slug + '/' + post.slug" class="col-10 offset-1 offset-sm-0 col-sm-6 col-lg-4" :key="post.id">
-          <article>
-            <img :srcset="imageSrcset(post.featured_media)" />
-            <div class="meta">
-              <h4 v-html="post.title.rendered"></h4>
-            </div>
-          </article>
-        </nuxt-link>
+      <div class="row grid" v-if="posts">
+        <Story
+          v-for="(post, index) in posts"
+          :data="post"
+          :key="index"
+        ></Story>
       </div>
     </main>
-    <SiteFooter></SiteFooter>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-import SiteHeader from '~/components/SiteHeader.vue'
-import SiteFooter from '~/components/SiteFooter.vue'
+import Story from '~/components/Story.vue'
 
 export default {
+  head () {
+    return {
+      title: this.title,
+      meta: [
+        { hid: 'description', name: 'description', content: this.data.subheadline }
+      ]
+    }
+  },
   components: {
-    SiteHeader,
-    SiteFooter
+    Story
   },
   computed: {
+    footnote () {
+      return this.data.footnote || false
+    },
     url () {
       let url = this.data.website
       if (url.endsWith('/')) {
@@ -92,8 +97,10 @@ export default {
   },
   data () {
     return {
+      data: {},
       posts: [],
-      media: {}
+      slide: 0,
+      timer: null
     }
   },
   methods: {
@@ -107,39 +114,32 @@ export default {
         return false
       }
     },
-    imageSrc: function (id) {
-      return this.media[id].source_url
-    },
-    imageSrcset: function (id) {
-      let srcset = ''
-      Object.keys(this.media[id].media_details.sizes).forEach(size => {
-        let current = this.media[id].media_details.sizes[size]
-        srcset += current.source_url + ' ' + current.width + 'w, '
-      })
-      return srcset
+    ticker: function () {
+      if (this.slide === this.data.featuredimage.hero.length - 1) {
+        this.slide = 0
+      } else {
+        this.slide++
+      }
+      this.timer = setTimeout(this.ticker, 3000)
     }
   },
   mounted () {
-    axios.get(this.urlWithHttp + '/wp-json/wp/v2/posts').then((response) => {
-      if (response.data.length > 0) {
-        let lookup = []
-        for (var i = 0, len = response.data.length; i < len; i++) {
-          lookup.push(response.data[i].featured_media)
-        }
-        axios.get(this.urlWithHttp + '/wp-json/wp/v2/media?include=' + lookup.join()).then((attachments) => {
-          for (var i = 0, len = attachments.data.length; i < len; i++) {
-            this.media[attachments.data[i].id] = attachments.data[i]
-          }
-          this.posts = response.data
-        })
-      }
+    this.ticker()
+    axios.get(this.$store.state.ajaxurl + '/wp/v2/posts?taxonomy=brands&per_page=30&term=' + this.data.brandtag).then((response) => {
+      this.posts = response.data
     }).catch((error) => {
       console.log(error.request)
     })
   },
+  beforeDestory () {
+    clearTimeout(this.timer)
+  },
   async asyncData (context) {
     let { data } = await axios.get(context.store.state.ajaxurl + '/wp/v2/brands/?slug=' + context.params.slug)
-    return { data: data[0] }
+    return {
+      data: data[0],
+      title: data[0].formatted_title
+    }
   }
 }
 </script>

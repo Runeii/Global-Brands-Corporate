@@ -1,15 +1,11 @@
 <template>
   <div class="loading-page" v-if="loading">
-    <div class="sk-cube-grid">
-      <div class="sk-cube sk-cube1"></div>
-      <div class="sk-cube sk-cube2"></div>
-      <div class="sk-cube sk-cube3"></div>
-      <div class="sk-cube sk-cube4"></div>
-      <div class="sk-cube sk-cube5"></div>
-      <div class="sk-cube sk-cube6"></div>
-      <div class="sk-cube sk-cube7"></div>
-      <div class="sk-cube sk-cube8"></div>
-      <div class="sk-cube sk-cube9"></div>
+    <div class="spinner">
+      <div class="rect1"></div>
+      <div class="rect2"></div>
+      <div class="rect3"></div>
+      <div class="rect4"></div>
+      <div class="rect5"></div>
     </div>
   </div>
 </template>
@@ -41,53 +37,45 @@ export default {
     text-align: center;
     z-index:999;
   }
-  .sk-cube-grid {
-    width: 40px;
-    height: 40px;
+  .spinner {
     margin: 100px auto;
+    width: 100px;
+    height: 40px;
+    text-align: center;
+    font-size: 10px;
   }
 
-  .sk-cube-grid .sk-cube {
-    width: 33%;
-    height: 33%;
-    background-color: rgba(255,255,255,0.7);
-    float: left;
-    animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
-  }
-  .sk-cube-grid .sk-cube1 {
-    animation-delay: 0.2s;
-  }
-  .sk-cube-grid .sk-cube2 {
-    animation-delay: 0.3s;
-  }
-  .sk-cube-grid .sk-cube3 {
-    animation-delay: 0.4s;
-  }
-  .sk-cube-grid .sk-cube4 {
-    animation-delay: 0.1s;
-  }
-  .sk-cube-grid .sk-cube5 {
-    animation-delay: 0.2s;
-  }
-  .sk-cube-grid .sk-cube6 {
-    animation-delay: 0.3s;
-  }
-  .sk-cube-grid .sk-cube7 {
-    animation-delay: 0s;
-  }
-  .sk-cube-grid .sk-cube8 {
-    animation-delay: 0.1s;
-  }
-  .sk-cube-grid .sk-cube9 {
-    animation-delay: 0.2s;
+  .spinner > div {
+    background-color: white;
+    height: 100%;
+    width: 6px;
+    margin:3px;
+    display: inline-block;
+
+    animation: sk-stretchdelay 1.2s infinite ease-in-out;
   }
 
-@keyframes sk-cubeGridScaleDelay {
-  0%, 70%, 100% {
-    transform: scale3D(1, 1, 1);
+  .spinner .rect2 {
+    animation-delay: -1.1s;
   }
-  35% {
-    transform: scale3D(0, 0, 1);
+
+  .spinner .rect3 {
+    animation-delay: -1.0s;
   }
-}
+
+  .spinner .rect4 {
+    animation-delay: -0.9s;
+  }
+
+  .spinner .rect5 {
+    animation-delay: -0.8s;
+  }
+
+  @keyframes sk-stretchdelay {
+    0%, 40%, 100% {
+      transform: scaleY(0.4);
+    }  20% {
+      transform: scaleY(1.0);
+    }
+  }
 </style>

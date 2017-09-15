@@ -1,7 +1,7 @@
 <template>
   <div class="statistics">
     <div class="stat">
-      <figure>164,000+</figure>cases sold each year
+      <figure>50% +</figure>export growth
     </div>
     <div class="stat">
       <figure>55</figure>countries worldwide

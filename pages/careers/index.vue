@@ -1,33 +1,35 @@
 <template>
   <div class="page careers">
-    <SiteHeader></SiteHeader>
     <main class="container">
       <PageNavigation></PageNavigation>
       <PageHeader :data="page"></PageHeader>
-      <CurrentVacancies id="listings" :careers="careers"></CurrentVacancies>
-      <BlockImageLeft id="interviews" :data="interviews" title="Staff Interviews"></BlockImageLeft>
+      <CurrentVacancies id="listings" :careers="careers" class="anchor"></CurrentVacancies>
+      <StaffInterviews id="interviews" :data="interviews" class="anchor"></StaffInterviews>
     </main>
-    <SiteFooter></SiteFooter>
   </div>
 </template>
 
 <script>
-import SiteHeader from '~/components/SiteHeader.vue'
 import PageNavigation from '~/components/PageNavigation.vue'
-import SiteFooter from '~/components/SiteFooter.vue'
 import PageHeader from '~/components/PageHeader.vue'
 import CurrentVacancies from '~/components/CurrentVacancies.vue'
-import BlockImageLeft from '~/components/BlockImageLeft.vue'
+import StaffInterviews from '~/components/StaffInterviews.vue'
 import axios from 'axios'
 
 export default {
+  head () {
+    return {
+      title: 'Careers',
+      meta: [
+        { hid: 'description', name: 'description', content: 'Global Brands is constantly on the lookout for ambitious and innovative people to help grow and nurture our brands.' }
+      ]
+    }
+  },
   components: {
     PageHeader,
     PageNavigation,
-    SiteHeader,
-    SiteFooter,
     CurrentVacancies,
-    BlockImageLeft
+    StaffInterviews
   },
   mounted () {
     if (this.$nuxt.$route.hash) {
@@ -43,7 +45,8 @@ export default {
         return {
           page: res.data.page,
           careers: res.data.listings,
-          interviews: res.data.interviews
+          interviews: res.data.interviews,
+          title: res.data.page.formatted_title
         }
       })
       .catch((error) => {

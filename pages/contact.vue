@@ -1,36 +1,40 @@
 <template>
   <div class="page contact">
-    <SiteHeader></SiteHeader>
     <main class="container">
       <PageHeader :data="page"></PageHeader>
+      <ContactForm></ContactForm>
       <Map></Map>
     </main>
-    <SiteFooter></SiteFooter>
   </div>
 </template>
 
 <script>
 // This is the catch all template for any WordPress pages that don't have a specific VUE template assigned
-import SiteHeader from '~/components/SiteHeader.vue'
 import PageHeader from '~/components/PageHeader.vue'
-import SiteFooter from '~/components/SiteFooter.vue'
 import ContactForm from '~/components/ContactForm.vue'
 import Map from '~/components/Map.vue'
 import axios from 'axios'
 
 export default {
+  head () {
+    return {
+      title: 'Contact',
+      meta: [
+        { hid: 'description', name: 'description', content: 'We love to hear from you - whatever your enquiry, we can help.' }
+      ]
+    }
+  },
   components: {
     PageHeader,
     ContactForm,
-    SiteHeader,
-    SiteFooter,
     Map
   },
   async asyncData (context) {
-    return axios.get(context.store.state.ajaxurl + '/wp/v2/pages?slug=contact')
+    return axios.get(context.store.state.ajaxurl + '/custom/contact')
       .then((res) => {
         return {
-          page: res.data[0]
+          page: res.data.page,
+          form: res.data.form
         }
       })
       .catch((error) => {

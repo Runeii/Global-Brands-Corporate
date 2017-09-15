@@ -1,6 +1,5 @@
 <template>
-  <div class="home">
-    <SiteHeader></SiteHeader>
+  <div class="home" ref="home">
     <main class="container">
       <div class="grid row">
         <Story
@@ -11,21 +10,16 @@
         ></Story>
       </div>
     </main>
-    <SiteFooter></SiteFooter>
   </div>
 </template>
 
 <script>
-import SiteHeader from '~/components/SiteHeader.vue'
 import Story from '~/components/Story.vue'
-import SiteFooter from '~/components/SiteFooter.vue'
 import axios from 'axios'
 
 export default {
   components: {
-    Story,
-    SiteHeader,
-    SiteFooter
+    Story
   },
   methods: {
     isWide: function (index) {
@@ -39,10 +33,12 @@ export default {
   async asyncData (context) {
     let { data } = await axios.get(context.store.state.ajaxurl + '/wp/v2/posts?per_page=5&sticky=true')
     let portfolio = {
-      brandcolour: '#4a5864',
+      brand_details: {
+        brand_colour: '#4a5864'
+      },
       featuredimage: {
         loopset: false,
-        src: 'https://staging.globalbrands.co.uk/cms/wp-content/uploads/2017/08/Global-Brands-Portfolio-group-shot-HR-370x370.jpg'
+        src: 'https://www.globalbrands.co.uk/cms/wp-content/uploads/2017/09/GB-PRODUCT-RANGE-SHOT-1144-no2-370x370.jpg'
       },
       subheadline: 'Our comprehensive range of premium and high energy brands',
       title: {
@@ -52,10 +48,12 @@ export default {
       isStatic: true
     }
     let messages = {
-      brandcolour: '#8a6f8d',
+      brand_details: {
+        brand_colour: '#8a6f8d'
+      },
       featuredimage: {
         loopset: false,
-        src: 'https://staging.globalbrands.co.uk/cms/wp-content/uploads/2017/09/Heart-of-global-brands-article-pic-370x370.jpg'
+        src: 'https://www.globalbrands.co.uk/cms/wp-content/uploads/2017/09/Heart-of-global-brands-article-pic-370x370.jpg'
       },
       title: {
         rendered: 'At the heart of Global Brands'

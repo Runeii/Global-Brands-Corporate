@@ -1,20 +1,26 @@
 <template>
   <div id="worldmap">
-    <ul class="submenu">
-      <li v-for="continent in continents" v-on:mouseover="highlight(continent)" v-on:mouseout="removeHighlight()">{{continent.name}}</li>
+    <ul class="submenu" :class="active">
+      <li v-for="(countries, continent) in continents" v-on:mouseover="highlight(continent)" :class="continent">{{continent}}</li>
     </ul>
     <div class="map row">
-      <ul class="countrylist col-12 col-sm-3">
-        <transition-group name="staggered-fade" v-if="countryList">
-          <li v-for="(country, index) in countryList" :key="index">{{country}}</li>
-        </transition-group>
-      </ul>
-      <span v-if="svgData" class="col-12 col-md-9" :class="active.class" v-html="svgData"> </span>
+      <transition-group name="fact-enter" tag="div" mode="out-in" class="copy col-12">
+        <h4 v-for="(fact, index) in factList" :key="index" class="fact"> {{fact}} </h4>
+      </transition-group>
+      <transition name="list-enter">
+        <div class="countrylist col-12 col-lg-3" v-if="stage === 0 || stage === 1">
+          <li v-for="(country, index) in firstlist" :key="index">{{country}}</li>
+        </div>
+        <div class="countrylist col-12 col-lg-3" v-if="stage === 2">
+          <li v-for="(country, index) in altlist" :key="index">{{country}}</li>
+        </div>
+      </transition>
+      <span v-if="svgData" class="col-12 col-lg-9" :class="active" v-html="svgData" ref="worldmap" v-on:mouseover="hoverHighlight(this, $event)"></span>
     </div>
-    <div class="mobile row" v-for="continent in continents">
-      <h4 class="col-4 offset-1">{{continent.name}}</h4>
+    <div class="mobile row" v-for="(countries, continent) in continents">
+      <h4 class="col-4 offset-1">{{continent}}</h4>
       <ul class="col-7 list">
-        <li v-for="(country, index) in continent.countries" :key="index">{{country}}</li>
+        <li v-for="(country, index) in countries.countries" :key="index">{{country}}</li>
       </ul>
     </div>
   </div>
@@ -24,69 +30,90 @@
 import axios from 'axios'
 const worldmap = require('~/static/img/worldmap.svg')
 export default {
+  computed: {
+    factList () {
+      if (this.active === false) {
+        return []
+      } else {
+        return this.continents[this.active].fact
+      }
+    }
+  },
   data () {
     return {
-      active: {
-        name: '',
-        class: '',
-        countries: []
-      },
-      countryList: [],
-      continents: [
-        {
-          name: 'Americas',
-          class: 'americas',
-          countries: ['Bermuda', 'Canada', 'Colombia', 'Costa Rica', 'El Salvador', 'Guatemala', 'Honduras', 'Mexico', 'Nicaragua', 'West Indies']
+      active: false,
+      stage: 0,
+      firstlist: [],
+      altlist: [],
+      continents: {
+        'americas': {
+          countries: ['Bermuda', 'Canada', 'Colombia', 'Costa Rica', 'El Salvador', 'Guatemala', 'Honduras', 'Mexico', 'Nicaragua', 'West Indies'],
+          fact: ['Hooper\'s is our most popular brand in North America', 'Franklin & Sons is our most popular brand in Colombia']
         },
-        {
-          name: 'Europe',
-          class: 'europe',
-          countries: ['Austria', 'Belgium', 'Bulgaria', 'Canary Islands', 'Croatia', 'Cyprus', 'Czech Republic', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Gibraltar', 'Greece', 'Guernsey', 'Hungary', 'Iceland', 'Ireland', 'Italy', 'Jersey', 'Latvia', 'Lithuania', 'Luxemburg', 'Mallorca', 'Malta', 'Norway', 'Russia', 'Spain', 'Sweden']
+        'europe': {
+          countries: ['Austria', 'Belgium', 'Bulgaria', 'Canary Islands', 'Croatia', 'Cyprus', 'Czech Republic', 'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Gibraltar', 'Greece', 'Guernsey', 'Hungary', 'Iceland', 'Ireland', 'Italy', 'Jersey', 'Latvia', 'Lithuania', 'Luxemburg', 'Mallorca', 'Malta', 'Norway', 'Russia', 'Spain', 'Sweden'],
+          fact: ['Products solid in 23 European countries', 'Franklin & Sons is the most popular brand']
         },
-        {
-          name: 'Africa',
-          class: 'africa',
-          countries: ['Benin', 'Cameroon', 'Nigeria', 'Seychelles']
+        'africa': {
+          countries: ['Benin', 'Cameroon', 'Nigeria', 'Seychelles'],
+          fact: ['VK is our most popular brand in Africa', '']
         },
-        {
-          name: 'Asia',
-          class: 'asia',
-          countries: ['Bahrain', 'Hong Kong', 'India', 'Japan', 'Jordan', 'Malaysia', 'Oman', 'Qatar', 'Singapore', 'South Korea', 'Taiwan', 'UAE']
+        'asia': {
+          countries: ['Bahrain', 'Hong Kong', 'India', 'Japan', 'Jordan', 'Malaysia', 'Oman', 'Qatar', 'Singapore', 'South Korea', 'Taiwan', 'UAE'],
+          fact: ['Currently solid in 12 Asian countries', 'Japan is our second largest market, selling VK, Jungfrau and Amigos']
         }
-      ],
+      },
       svgData: false,
-      ticker: 0
+      offset: 0,
+      set: ['americas', 'europe', 'africa', 'asia'],
+      timer: ''
     }
   },
   methods: {
     highlight: function (continent) {
+      clearTimeout(this.timer)
       this.active = continent
     },
-    removeHighlight: function () {
-      this.active = {
-        name: '',
-        class: '',
-        countries: []
+    hoverHighlight: function (el, event) {
+      if (event.target.tagName === 'path') {
+        if (event.target.classList.value && event.target.classList.value !== '') {
+          this.highlight(event.target.classList.value)
+        }
       }
+    },
+    ticker: function () {
+      this.active = this.set[this.offset]
+      if (this.offset === this.set.length - 1) {
+        this.offset = 0
+      } else {
+        this.offset++
+      }
+      this.timer = setTimeout(this.ticker, 3000)
+    },
+    swapLists: function (newContinent) {
+      if (this.stage === 0) {
+        this.firstlist = this.continents[newContinent].countries
+        this.stage = 1
+      } else if (this.stage === 1) {
+        this.altlist = this.continents[newContinent].countries
+        this.stage = 2
+      } else if (this.stage === 2) {
+        this.firstlist = this.continents[newContinent].countries
+        this.stage = 1
+      }
+    }
+  },
+  watch: {
+    active: function (newContinent) {
+      this.swapLists(newContinent)
     }
   },
   mounted () {
     axios.get(worldmap)
       .then((res) => {
         this.svgData = res.data
+        this.ticker()
       })
-  },
-  watch: {
-    active: function (val) {
-      let countrylist = this.countryList = []
-      for (var i = 0, len = val.countries.length; i < len; i++) {
-        let delay = i * 50
-        let country = val.countries[i]
-        setTimeout(function () {
-          countrylist.push(country)
-        }, delay)
-      }
-    }
   }
 }
 </script>

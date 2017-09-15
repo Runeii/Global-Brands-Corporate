@@ -1,6 +1,5 @@
 <template>
   <div>
-    <SiteHeader></SiteHeader>
     <main class="container single-post">
       <article>
         <i class="close custom-icon-cross h1" v-on:click="close"></i>
@@ -9,7 +8,7 @@
             <li class="date">Added: {{postdate}}</li>
             <li class="category">{{data.categories_extended[0].name}}</li>
           </ul>
-          <h1>{{data.title.rendered}}</h1>
+          <h1 v-html="data.title.rendered"></h1>
           <img v-if="data.featuredimage.src" v-bind:src="data.featuredimage.src" v-bind:srcset="data.featuredimage.srcset" class="page" />
           <div class="content" v-html="data.content.rendered"></div>
           <ul class="footer">
@@ -23,21 +22,33 @@
         </div>
       </article>
     </main>
-    <SiteFooter></SiteFooter>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
 import {format, parse} from 'date-fns'
-import SiteHeader from '~/components/SiteHeader.vue'
-import SiteFooter from '~/components/SiteFooter.vue'
 import SocialLinks from '~/components/SocialLinks.vue'
 
 export default {
+  head () {
+    return {
+      title: this.title,
+      meta: [
+        { vmid: 'og:title', property: 'og:title', content: this.title },
+        { hid: 'description', name: 'description', content: this.description },
+        { vmid: 'og:description', property: 'og:description', content: this.description },
+        { vmid: 'twitter:card', property: 'twitter:card', content: 'summary_large_image' },
+        { vmid: 'twitter:title', property: 'twitter:title', content: this.title },
+        { vmid: 'twitter:description', property: 'twitter:description', content: this.description },
+        { vmid: 'og:image', property: 'og:image', content: this.social_image_src },
+        { vmid: 'og:image:width', property: 'og:image:width', content: this.social_image_width },
+        { vmid: 'og:image:height', property: 'og:image:height', content: this.social_image_height },
+        { vmid: 'twitter:image', property: 'twitter:image', content: this.social_image_src }
+      ]
+    }
+  },
   components: {
-    SiteHeader,
-    SiteFooter,
     SocialLinks
   },
   computed: {
@@ -60,7 +71,14 @@ export default {
   },
   async asyncData (context) {
     let { data } = await axios.get(context.store.state.ajaxurl + '/wp/v2/posts/?slug=' + context.params.slug)
-    return { data: data[0] }
+    return {
+      data: data[0],
+      title: data[0].formatted_title,
+      description: data[0].subheadline,
+      social_image_src: data[0].featuredimage.src,
+      social_image_height: data[0].featuredimage.height,
+      social_image_width: data[0].featuredimage.width
+    }
   }
 }
 </script>

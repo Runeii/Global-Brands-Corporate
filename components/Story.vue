@@ -1,10 +1,10 @@
 <template>
   <nuxt-link v-if="filtered" :to="permalink" :class="classList">
     <article>
-      <div class="overlay" :style="'background-color: ' + data.brandcolour"></div>
-      <CustomImg :src="imageSrc" :width="size[0]" :height="size[1]" :srcset="data.featuredimage.loopset" :title="data.title.rendered" :style="'background-color: ' + data.brandcolour" />
+      <div class="overlay" :style="'background-color: ' + data.brand_details.brand_colour"></div>
+      <CustomImg :src="imageSrc" :width="size[0]" :height="size[1]" :id="data.id" :srcset="imageSrcset" :title="data.title.rendered" :style="'background-color: ' + data.brand_details.brand_colour" />
       <div class="meta">
-        <h2 :class="size[2]">{{data.title.rendered}}</h2>
+        <h2 :class="size[2]" v-html="data.title.rendered"></h2>
         <p>{{data.subheadline}}</p>
       </div>
     </article>
@@ -38,10 +38,33 @@ export default {
       }
     },
     imageSrc () {
-      if (this.data.featuredimage.loop) {
-        return this.data.featuredimage.loop[0]
+      if (this.$props.wide === true) {
+        if (this.data.featuredimage.loop_wide) {
+          return this.data.featuredimage.loop_wide[0]
+        } else {
+          return this.data.featuredimage.src
+        }
       } else {
-        return this.data.featuredimage.src
+        if (this.data.featuredimage.loop) {
+          return this.data.featuredimage.loop[0]
+        } else {
+          return this.data.featuredimage.src
+        }
+      }
+    },
+    imageSrcset () {
+      if (this.$props.wide === true) {
+        if (this.data.featuredimage.loop_wideset) {
+          return this.data.featuredimage.loop_wideset
+        } else {
+          return this.data.featuredimage.srcset
+        }
+      } else {
+        if (this.data.featuredimage.loopset) {
+          return this.data.featuredimage.loopset
+        } else {
+          return this.data.featuredimage.srcset
+        }
       }
     },
     permalink () {

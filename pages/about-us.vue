@@ -1,22 +1,19 @@
 <template>
   <div class="page about-us">
-    <SiteHeader></SiteHeader>
     <main class="container">
       <PageHeader :data="page" id="vision"></PageHeader>
       <PageHeader :data="page.associated.values" id="values"></PageHeader>
-      <Timeline :milestones="timeline" id="history"></Timeline>
+      <Timeline :milestones="timeline" id="history" class="anchor"></Timeline>
     </main>
-    <Steve :data="steve"></Steve>
+    <Steve :data="steve" class="anchor"></Steve>
     <div class="container">
-      <BlockImageLeft :data="directors" title="Directors" id="directors"></BlockImageLeft>
+      <BlockImageLeft :data="directors" title="Directors" id="directors" class="anchor"></BlockImageLeft>
     </div>
-    <SiteFooter></SiteFooter>
   </div>
 </template>
 
 <script>
 // This is the catch all template for any WordPress pages that don't have a specific VUE template assigned
-import SiteHeader from '~/components/SiteHeader.vue'
 import PageHeader from '~/components/PageHeader.vue'
 import Timeline from '~/components/Timeline.vue'
 import SiteFooter from '~/components/SiteFooter.vue'
@@ -27,7 +24,6 @@ import axios from 'axios'
 export default {
   components: {
     PageHeader,
-    SiteHeader,
     SiteFooter,
     Timeline,
     Steve,

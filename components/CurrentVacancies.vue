@@ -2,7 +2,7 @@
   <div class="listings">
     <h2>Current Vacancies</h2>
     <ul>
-      <nuxt-link :to="'careers' + role.post_name" v-for="role in careers" :data="role" :key="role.ID">
+      <nuxt-link :to="'/careers/listing/' + role.post_name" v-for="role in careers" :data="role" :key="role.ID">
         <li class="col-12">
           <h3>{{role.post_title}} <span class="location" v-if="role.location">- {{role.location}}</span></h3>
           <p class="h5">{{postdate(role)}}</p>
