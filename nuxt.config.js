@@ -78,19 +78,21 @@ module.exports = {
       '~/static/js/modernizr.js'
     ],
     babel: {
-      presets: ['es2015', 'react', 'stage-2',
-                  ["env", {
-                    "targets": {
-                      "browsers": [
-                        "last 2 versions",
-                        "safari >= 7",
-                        "IE 10"]
-                    }
-                  }]
-      ],
-      plugins: [
-        'transform-runtime'
-      ]
+      presets({ envName }, [ preset, options ]) {
+        const envTargets = {
+          client: { browsers: ["last 2 versions"], ie: 11 },
+          server: { node: "current" },
+        }
+        return [
+          [
+            "@nuxt/babel-preset-app",
+            {
+              corejs: { version: 3 },
+              targets: envTargets[envName]
+            }
+          ]
+        ]
+      }
     },
     /*
     ** Run ESLINT on save

@@ -23,7 +23,7 @@ import format from 'date-fns/format'
 export default {
   computed: {
     year () {
-      return format(new Date(), 'YYYY')
+      return format(new Date(), 'yyyy')
     }
   }
 }

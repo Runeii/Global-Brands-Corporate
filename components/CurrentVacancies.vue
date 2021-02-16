@@ -14,13 +14,13 @@
 </template>
 
 <script>
-import {format, parse} from 'date-fns'
+import {format, parseISO} from 'date-fns'
 export default {
   props: ['careers'],
   methods: {
     postdate: function (role) {
-      var newdate = parse(role.post_date)
-      return 'Added: ' + format(newdate, 'Do MMMM YYYY')
+      var newdate = parseISO(role.post_date)
+      return 'Added: ' + format(newdate, 'Do MMMM yyyy')
     }
   }
 }

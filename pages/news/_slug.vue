@@ -27,7 +27,7 @@
 
 <script>
 import axios from 'axios'
-import {format, parse} from 'date-fns'
+import {format, parseISO} from 'date-fns'
 import SocialLinks from '~/components/SocialLinks.vue'
 
 export default {
@@ -53,8 +53,8 @@ export default {
   },
   computed: {
     postdate: function () {
-      var newdate = parse(this.data.date)
-      return format(newdate, 'Do MMMM YYYY')
+      var newdate = parseISO(this.data.date)
+      return format(newdate, 'Do MMMM yyyy')
     }
   },
   methods: {

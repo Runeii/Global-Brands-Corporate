@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import {format, parse} from 'date-fns'
+import {format, parseISO} from 'date-fns'
 export default {
   data () {
     return {
@@ -56,8 +56,8 @@ export default {
       }
     },
     date: function (date) {
-      var newdate = parse(date)
-      return format(newdate, 'YYYY')
+      var newdate = parseISO(date)
+      return format(newdate, 'yyyy')
     }
   },
   props: ['milestones']
