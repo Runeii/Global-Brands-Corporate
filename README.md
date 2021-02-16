@@ -1,22 +1,15 @@
-# globalbrands
+# Global Brand Corporate FE client
 
-> Nuxt.js project
+* BE is fed via CMS API
+* FE runs via Node, controlled via PM2 for stability and startup control
 
-## Build Setup
 
-``` bash
-# install dependencies
-$ npm install # Or yarn install
+## Running on server
+1. If files not already on server: `git clone https://github.com/fightwithcrayon/Global-Brands-Corporate/`
+2. `cd Global-Brands-Corporate`
+2. `npm install`
+3. `npm build`
+4. Install PM2 `npm install pm2@latest -g`
+5. Launch as PM2 app `pm2 start npm --name "frontend" -- start`
+6. Ensure PM2 will resume on restart: `pm2 startup` and then `pm2 save`
 
-# serve with hot reload at localhost:3000
-$ npm run dev
-
-# build for production and launch server
-$ npm run build
-$ npm start
-
-# generate static project
-$ npm run generate
-```
-
-For detailed explanation on how things work, checkout the [Nuxt.js docs](https://github.com/nuxt/nuxt.js).
